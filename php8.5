@@ -23,13 +23,13 @@ RUN wget -qO- https://www.php.net/distributions/php-8.5.1.tar.gz | tar xz --stri
         --with-openssl\
         --with-zlib\
         --with-curl&&\
-    make -j16 &&\
+    make -j$(nproc) &&\
     make install
 
 RUN wget -qO- https://codeload.github.com/php/pecl-networking-xmlrpc/tar.gz/refs/heads/master | tar -xz --strip-components=1 &&\
     /usr/local/bin/phpize &&\
     ./configure --with-php-config=/usr/local/bin/php-config &&\
-    make -j16 &&\
+    make -j$(nproc) &&\
     make install
 
 RUN strip /usr/local/bin/php
