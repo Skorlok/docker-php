@@ -14,13 +14,15 @@ jobs:
   detect:
     runs-on: ubuntu-latest
     outputs:
-      dockerfiles: ${{ steps.set.outputs.dockerfiles }}
+      dockerfiles_json: ${{ steps.set.outputs.dockerfiles_json }}
     steps:
       - uses: actions/checkout@v4
+
       - id: set
         run: |
           files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^php' || true)
-          echo "dockerfiles=$files" >> $GITHUB_OUTPUT
+          files_json=$(echo $files | tr ' ' '\n' | jq -R -s -c 'split("\n")[:-1]')
+          echo "dockerfiles_json=$files_json" >> $GITHUB_OUTPUT
 
   build:
     needs: detect
@@ -28,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dockerfile: [${{fromJSON('["' + needs.detect.outputs.dockerfiles | replace('\n','","') + '"]')}}]
+        dockerfile: ${{ fromJSON(needs.detect.outputs.dockerfiles_json) }}
 
     steps:
       - uses: actions/checkout@v4
