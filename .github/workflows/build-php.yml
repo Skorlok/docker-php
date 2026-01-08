@@ -3,7 +3,7 @@ name: Build & Push PHP Docker Images
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'php*'
 
