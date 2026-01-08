@@ -20,13 +20,12 @@ jobs:
 
       - id: set
         run: |
-          files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^php' || true)
+          files=$(ls php* 2>/dev/null || true)
           files_json=$(echo $files | tr ' ' '\n' | jq -R -s -c 'split("\n")[:-1]')
           echo "dockerfiles_json=$files_json" >> $GITHUB_OUTPUT
 
   build:
     needs: detect
-    if: ${{ needs.detect.outputs.dockerfiles != '' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
