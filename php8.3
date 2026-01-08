@@ -5,7 +5,8 @@ RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev curl-dev opens
 WORKDIR /app/php
 
 RUN wget -qO- https://www.php.net/distributions/php-8.3.29.tar.gz | tar xz --strip-components=1 &&\
-    ./configure --disable-ctype\
+    ./configure --build=x86_64-linux-gnu --host=$TARGETPLATFORM\
+        --disable-ctype\
         --disable-fileinfo\
         --disable-opcache\
         --disable-posix\

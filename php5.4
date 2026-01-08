@@ -5,7 +5,8 @@ FROM skorlok/php:base AS base
 WORKDIR /app/php
 
 RUN wget -qO- http://museum.php.net/php5/php-5.4.45.tar.gz | tar xz --strip-components=1 &&\
-    ./configure --with-config-file-path=/opt/php/ --disable-ctype\
+    ./configure --with-config-file-path=/opt/php/ --build=x86_64-linux-gnu --host=$TARGETPLATFORM\
+        --disable-ctype\
         --disable-fileinfo\
         --disable-opcache\
         --disable-pdo\
