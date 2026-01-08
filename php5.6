@@ -28,7 +28,7 @@ RUN wget -qO- https://www.php.net/distributions/php-5.6.40.tar.gz | tar xz --str
         --with-xmlrpc\
         --with-curl=/opt/curl7\
         --with-openssl-dir=/opt/openssl1.0&&\
-    make -j16 &&\
+    make -j$(nproc) &&\
     make install
 
 

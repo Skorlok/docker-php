@@ -29,7 +29,7 @@ RUN wget -qO- http://museum.php.net/php5/php-5.3.29.tar.gz | tar xz --strip-comp
         --with-curl=/opt/curl7\
         --with-openssl-dir=/opt/openssl1.0\
         --with-libxml-dir=/opt/libxml2 &&\
-    make -j16 &&\
+    make -j$(nproc) &&\
     make install
 
 RUN strip /usr/local/bin/php

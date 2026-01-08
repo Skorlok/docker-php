@@ -20,7 +20,7 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
         --enable-sockets\
         --enable-gd\
         --enable-mysqlnd --with-mysqli=mysqlnd\
-        --with-openssl=/opt/openssl1.1\
+        --with-openssl\
         --with-zlib\
         --with-curl=/opt/curl8&&\
     make -j16 &&\
