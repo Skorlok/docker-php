@@ -28,7 +28,7 @@ RUN wget -qO- https://www.php.net/distributions/php-7.0.33.tar.gz | tar xz --str
         --with-xmlrpc\
         --with-curl=/opt/curl8\
         --with-openssl-dir=/opt/openssl1.1&&\
-    make -j16 &&\
+    make -j$(nproc) &&\
     make install
 
 
