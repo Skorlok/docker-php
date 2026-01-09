@@ -39,6 +39,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set Docker tag
+        id: tag
+        run: |
+          TAG=${{ matrix.dockerfile }}
+          TAG=${TAG#php}
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
       - name: Build & Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -46,5 +53,5 @@ jobs:
           file: ./${{ matrix.dockerfile }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            skorlok/php:${{ matrix.dockerfile  | replace('php','') }}
+          tags: skorlok/php:${{ steps.tag.outputs.TAG }}
+
