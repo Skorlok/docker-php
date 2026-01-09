@@ -1,6 +1,6 @@
 FROM skorlok/php:base AS base
 
-RUN apk add --no-cache libxml2-dev oniguruma-dev
+RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev oniguruma-dev
 
 WORKDIR /app/php
 
