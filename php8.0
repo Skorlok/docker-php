@@ -3,7 +3,7 @@ FROM skorlok/php:base AS base
 RUN apk add --no-cache libxml2-dev sqlite-dev oniguruma-dev
 
 WORKDIR /app/php
-
+# X
 RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfig && wget -qO- https://www.php.net/distributions/php-8.0.30.tar.gz | tar xz --strip-components=1 &&\
     ./configure\
         --disable-ctype\
