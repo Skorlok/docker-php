@@ -4,18 +4,21 @@ RUN apk add --no-cache libxml2-dev sqlite-dev oniguruma-dev
 
 WORKDIR /app/php
 
-RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfig && wget -qO- https://www.php.net/distributions/php-8.0.30.tar.gz | tar xz --strip-components=1 &&\
-    ./configure\
+RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfig && wget -qO- https://www.php.net/distributions/php-7.4.33.tar.gz | tar xz --strip-components=1 &&\
+    ./configure --with-config-file-path=/opt/php/\
         --disable-ctype\
         --disable-fileinfo\
         --disable-opcache\
+        --disable-pdo\
         --disable-posix\
         --disable-session\
         --disable-tokenizer\
         --disable-xmlreader\
         --disable-xmlwriter\
         --without-iconv\
+        --enable-json\
         --enable-xml\
+        --enable-libxml\
         --enable-mbstring\
         --enable-pcntl\
         --enable-sockets\
@@ -23,19 +26,16 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
         --enable-mysqlnd --with-mysqli=mysqlnd\
         --with-openssl\
         --with-zlib\
-        --with-curl=/opt/curl8&&\
+        --with-xmlrpc\
+        --with-curl=/opt/curl8\
+        --with-openssl-dir=/opt/openssl1.1&&\
     make -j$(nproc) &&\
     make install
 
-RUN wget -qO- https://codeload.github.com/php/pecl-networking-xmlrpc/tar.gz/refs/heads/master | tar -xz --strip-components=1 &&\
-    /usr/local/bin/phpize &&\
-    ./configure --with-php-config=/usr/local/bin/php-config &&\
-    make -j$(nproc) &&\
-    make install
 
 RUN strip /usr/local/bin/php
 
-RUN strip /opt/openssl1.1/lib/libcrypto.so.1.1 /opt/openssl1.1/lib/libssl.so.1.1 /usr/lib/libxml2.so.2 /opt/curl8/lib/libcurl.so.4 /usr/lib/libpng16.so.16 /usr/lib/libonig.so.5 /usr/lib/liblzma.so.5 /usr/lib/libsqlite3.so.0
+RUN strip /opt/openssl1.1/lib/libcrypto.so.1.1 /opt/openssl1.1/lib/libssl.so.1.1 /usr/lib/libxml2.so.2 /opt/curl8/lib/libcurl.so.4 /usr/lib/libpng16.so.16 /usr/lib/liblzma.so.5
 
 FROM alpine:latest
 
@@ -48,8 +48,4 @@ COPY --from=base /usr/lib/liblzma.so.5 /usr/lib/liblzma.so.5
 COPY --from=base /usr/lib/libsqlite3.so.0 /usr/lib/libsqlite3.so.0
 COPY --from=base /usr/lib/libonig.so.5 /usr/lib/libonig.so.5
 
-COPY --from=base /usr/local/bin/php /usr/local/bin/php8.0
-
-COPY --from=base /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
-
-RUN echo "extension=xmlrpc.so" > /usr/local/lib/php.ini
+COPY --from=base /usr/local/bin/php /usr/local/bin/php7.4
