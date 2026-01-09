@@ -5,7 +5,7 @@ RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev curl-dev opens
 WORKDIR /app/php
 
 RUN wget -qO- https://www.php.net/distributions/php-8.4.16.tar.gz | tar xz --strip-components=1 &&\
-    ./configure --build=x86_64-linux-gnu --host=$TARGETPLATFORM\
+    ./configure\
         --disable-ctype\
         --disable-fileinfo\
         --disable-opcache\
