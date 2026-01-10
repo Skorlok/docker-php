@@ -1,6 +1,6 @@
 FROM alpine:latest AS base
 
-RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev curl-dev openssl-dev sqlite-dev oniguruma-dev linux-headers
+RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev curl-dev openssl-dev sqlite-dev oniguruma-dev linux-headers && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main/ gcc=13.2.1_git20240309-r1
 
 WORKDIR /app/php
 
@@ -35,7 +35,7 @@ RUN wget -qO- https://codeload.github.com/php/pecl-networking-xmlrpc/tar.gz/refs
 
 RUN strip /usr/local/bin/php
 
-RUN strip /usr/lib/libxml2.so.2 /usr/lib/libssl.so.3 /usr/lib/libcrypto.so.3 /usr/lib/libsqlite3.so.0 /usr/lib/libcurl.so.4 /usr/lib/libpng16.so.16 /usr/lib/libonig.so.5 /usr/lib/liblzma.so.5 /usr/lib/libcares.so.2\
+RUN strip /usr/lib/libpng16.so.16 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libsqlite3.so.0 /usr/lib/libonig.so.5 /usr/lib/libssl.so.3 /usr/lib/libcrypto.so.3 /usr/lib/libcurl.so.4 /usr/lib/libcares.so.2\
           /usr/lib/libnghttp2.so.14 /usr/lib/libidn2.so.0 /usr/lib/libpsl.so.5 /usr/lib/libzstd.so.1 /usr/lib/libbrotlidec.so.1 /usr/lib/libunistring.so.5 /usr/lib/libbrotlicommon.so.1 /usr/lib/libnghttp3.so.9
 
 FROM alpine:latest
@@ -63,3 +63,5 @@ COPY --from=base /usr/local/bin/php /usr/local/bin/php8.3
 COPY --from=base /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
 RUN echo "extension=xmlrpc.so" > /usr/local/lib/php.ini
+
+RUN wget -O /etc/ssl/certs/ca-certificates.crt https://curl.se/ca/cacert.pem

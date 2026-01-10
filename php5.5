@@ -2,11 +2,11 @@ FROM skorlok/php:base AS lib
 FROM alpine:latest AS base
 COPY --from=lib /opt/ /opt/
 
-RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev oniguruma-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main/ gcc=13.2.1_git20240309-r1
+RUN apk add --no-cache build-base autoconf libpng-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.10/main/ gcc=8.3.0-r0
 
 WORKDIR /app/php
 
-RUN wget -qO- https://www.php.net/distributions/php-7.1.33.tar.gz | tar xz --strip-components=1 &&\
+RUN wget -qO- http://museum.php.net/php5/php-5.5.0.tar.gz | tar xz --strip-components=1 &&\
     ./configure --with-config-file-path=/opt/php/\
         --disable-ctype\
         --disable-fileinfo\
@@ -26,28 +26,27 @@ RUN wget -qO- https://www.php.net/distributions/php-7.1.33.tar.gz | tar xz --str
         --enable-sockets\
         --with-gd\
         --enable-mysqlnd --with-mysqli=mysqlnd\
-        --with-openssl=/opt/openssl1.1\
+        --with-openssl=/opt/openssl1.0\
         --with-zlib\
         --with-xmlrpc\
-        --with-curl=/opt/curl8\
-        --with-openssl-dir=/opt/openssl1.1&&\
+        --with-curl=/opt/curl7\
+        --with-openssl-dir=/opt/openssl1.0\
+        --with-libxml-dir=/opt/libxml2 &&\
     make -j$(nproc) &&\
     make install
 
-
 RUN strip /usr/local/bin/php
 
-RUN strip /usr/lib/libpng16.so.16 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5
+RUN strip /usr/lib/libpng16.so.16
 
 FROM alpine:latest
 
-COPY --from=lib /opt/openssl1.1/lib/libcrypto.so.1.1 /opt/openssl1.1/lib/libcrypto.so.1.1
-COPY --from=lib /opt/openssl1.1/lib/libssl.so.1.1 /opt/openssl1.1/lib/libssl.so.1.1
-COPY --from=lib /opt/curl8/lib/libcurl.so.4 /opt/curl8/lib/libcurl.so.4
-COPY --from=base /usr/lib/libxml2.so.2 /usr/lib/libxml2.so.2
+COPY --from=lib /opt/openssl1.0/lib/libcrypto.so.1.0.0 /opt/openssl1.0/lib/libcrypto.so.1.0.0
+COPY --from=lib /opt/openssl1.0/lib/libssl.so.1.0.0 /opt/openssl1.0/lib/libssl.so.1.0.0
+COPY --from=lib /opt/curl7/lib/libcurl.so.4 /opt/curl7/lib/libcurl.so.4
+COPY --from=lib /opt/libxml2/lib/libxml2.so.2 /opt/libxml2/lib/libxml2.so.2
 COPY --from=base /usr/lib/libpng16.so.16 /usr/lib/libpng16.so.16
-COPY --from=base /usr/lib/liblzma.so.5 /usr/lib/liblzma.so.5
 
-COPY --from=base /usr/local/bin/php /usr/local/bin/php7.1
+COPY --from=base /usr/local/bin/php /usr/local/bin/php5.5
 
 RUN wget -O /etc/ssl/certs/ca-certificates.crt https://curl.se/ca/cacert.pem
