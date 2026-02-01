@@ -2,7 +2,7 @@ FROM skorlok/php:base AS lib
 FROM alpine:latest AS base
 COPY --from=lib /opt/ /opt/
 
-RUN apk add --no-cache build-base autoconf libpng-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.10/main/ gcc=8.3.0-r0
+RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.10/main/ gcc=8.3.0-r0
 
 WORKDIR /app/php
 
@@ -30,23 +30,26 @@ RUN wget -qO- http://museum.php.net/php5/php-5.5.0.tar.gz | tar xz --strip-compo
         --with-zlib\
         --with-xmlrpc\
         --with-curl=/opt/curl7\
-        --with-openssl-dir=/opt/openssl1.0\
-        --with-libxml-dir=/opt/libxml2 &&\
+        --with-openssl-dir=/opt/openssl1.0&&\
     make -j$(nproc) &&\
     make install
 
+
 RUN strip /usr/local/bin/php
 
-RUN strip /usr/lib/libpng16.so.16
+RUN strip /lib/ld-musl-x86_64.so.1 /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16
 
-FROM alpine:latest
+FROM busybox:musl
 
+COPY --from=base /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
+COPY --from=base /usr/lib/libz.so.1 /usr/lib/libz.so.1
 COPY --from=lib /opt/openssl1.0/lib/libcrypto.so.1.0.0 /opt/openssl1.0/lib/libcrypto.so.1.0.0
 COPY --from=lib /opt/openssl1.0/lib/libssl.so.1.0.0 /opt/openssl1.0/lib/libssl.so.1.0.0
 COPY --from=lib /opt/curl7/lib/libcurl.so.4 /opt/curl7/lib/libcurl.so.4
-COPY --from=lib /opt/libxml2/lib/libxml2.so.2 /opt/libxml2/lib/libxml2.so.2
+COPY --from=base /usr/lib/libxml2.so.2 /usr/lib/libxml2.so.2
+COPY --from=base /usr/lib/liblzma.so.5 /usr/lib/liblzma.so.5
 COPY --from=base /usr/lib/libpng16.so.16 /usr/lib/libpng16.so.16
 
 COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
-RUN wget -O /etc/ssl/certs/ca-certificates.crt https://curl.se/ca/cacert.pem
+ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/ca-certificates.crt

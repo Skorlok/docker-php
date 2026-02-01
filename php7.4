@@ -2,7 +2,7 @@ FROM skorlok/php:base AS lib
 FROM alpine:latest AS base
 COPY --from=lib /opt/ /opt/
 
-RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev sqlite-dev oniguruma-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main/ gcc=13.2.1_git20240309-r1
+RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev sqlite-dev oniguruma-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main/ gcc=13.2.1_git20240309-r1
 
 WORKDIR /app/php
 
@@ -37,19 +37,21 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
 
 RUN strip /usr/local/bin/php
 
-RUN strip /usr/lib/libpng16.so.16 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libsqlite3.so.0 /usr/lib/libonig.so.5
+RUN strip /lib/ld-musl-x86_64.so.1 /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16 /usr/lib/libsqlite3.so.0 /usr/lib/libonig.so.5
 
-FROM alpine:latest
+FROM busybox:musl
 
+COPY --from=base /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
+COPY --from=base /usr/lib/libz.so.1 /usr/lib/libz.so.1
 COPY --from=lib /opt/openssl1.1/lib/libcrypto.so.1.1 /opt/openssl1.1/lib/libcrypto.so.1.1
 COPY --from=lib /opt/openssl1.1/lib/libssl.so.1.1 /opt/openssl1.1/lib/libssl.so.1.1
 COPY --from=lib /opt/curl8/lib/libcurl.so.4 /opt/curl8/lib/libcurl.so.4
 COPY --from=base /usr/lib/libxml2.so.2 /usr/lib/libxml2.so.2
-COPY --from=base /usr/lib/libpng16.so.16 /usr/lib/libpng16.so.16
 COPY --from=base /usr/lib/liblzma.so.5 /usr/lib/liblzma.so.5
+COPY --from=base /usr/lib/libpng16.so.16 /usr/lib/libpng16.so.16
 COPY --from=base /usr/lib/libsqlite3.so.0 /usr/lib/libsqlite3.so.0
 COPY --from=base /usr/lib/libonig.so.5 /usr/lib/libonig.so.5
 
 COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
-RUN wget -O /etc/ssl/certs/ca-certificates.crt https://curl.se/ca/cacert.pem
+ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/ca-certificates.crt
