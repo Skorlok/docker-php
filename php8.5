@@ -1,10 +1,10 @@
 FROM alpine:latest AS base
 
-RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev curl-dev openssl-dev sqlite-dev oniguruma-dev linux-headers && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main/ gcc=13.2.1_git20240309-r1
+RUN apk add --no-cache build-base autoconf libpng-dev libxml2-dev curl-dev openssl-dev sqlite-dev oniguruma-dev linux-headers
 
 WORKDIR /app/php
 
-RUN wget -qO- https://www.php.net/distributions/php-8.5.1.tar.gz | tar xz --strip-components=1 &&\
+RUN wget -qO- https://www.php.net/distributions/php-8.5.2.tar.gz | tar xz --strip-components=1 &&\
     ./configure\
         --disable-ctype\
         --disable-fileinfo\
@@ -59,7 +59,7 @@ COPY --from=base /usr/lib/libbrotlicommon.so.1 /usr/lib/libbrotlicommon.so.1
 COPY --from=base /usr/lib/libnghttp3.so.9 /usr/lib/libnghttp3.so.9
 COPY --from=base /usr/lib/libgcc_s.so.1 /usr/lib/libgcc_s.so.1
 
-COPY --from=base /usr/local/bin/php /usr/local/bin/php8.5
+COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
 COPY --from=base /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 

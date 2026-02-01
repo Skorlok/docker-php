@@ -50,6 +50,6 @@ COPY --from=base /usr/lib/liblzma.so.5 /usr/lib/liblzma.so.5
 COPY --from=base /usr/lib/libsqlite3.so.0 /usr/lib/libsqlite3.so.0
 COPY --from=base /usr/lib/libonig.so.5 /usr/lib/libonig.so.5
 
-COPY --from=base /usr/local/bin/php /usr/local/bin/php7.4
+COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
 RUN wget -O /etc/ssl/certs/ca-certificates.crt https://curl.se/ca/cacert.pem
