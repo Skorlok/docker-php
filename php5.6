@@ -1,6 +1,7 @@
 FROM skorlok/php:base AS lib
 FROM alpine:latest AS base
 COPY --from=lib /opt/ /opt/
+ARG TARGETARCH
 
 RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.10/main/ gcc=8.3.0-r0
 
@@ -37,11 +38,13 @@ RUN wget -qO- http://museum.php.net/php5/php-5.6.40.tar.gz | tar xz --strip-comp
 
 RUN strip /usr/local/bin/php
 
-RUN strip /lib/ld-musl-x86_64.so.1 /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16
+RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi && mkdir /app/libs/ && cp /lib/ld-musl-$FLAG.so.1 /app/libs/ && strip /app/libs/ld-musl-$FLAG.so.1
+
+RUN strip /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16
 
 FROM busybox:musl
 
-COPY --from=base /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
+COPY --from=base /app/libs/ /lib/
 COPY --from=base /usr/lib/libz.so.1 /usr/lib/libz.so.1
 COPY --from=lib /opt/openssl1.0/lib/libcrypto.so.1.0.0 /opt/openssl1.0/lib/libcrypto.so.1.0.0
 COPY --from=lib /opt/openssl1.0/lib/libssl.so.1.0.0 /opt/openssl1.0/lib/libssl.so.1.0.0
