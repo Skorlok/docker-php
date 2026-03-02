@@ -42,7 +42,7 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi 
 
 RUN strip /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16
 
-FROM busybox:musl
+FROM scratch
 
 COPY --from=base /app/libs/ /lib/
 COPY --from=base /usr/lib/libz.so.1 /usr/lib/libz.so.1
@@ -55,4 +55,4 @@ COPY --from=base /usr/lib/libpng16.so.16 /usr/lib/libpng16.so.16
 
 COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
-ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/ca-certificates.crt
+ADD https://curl.se/ca/cacert.pem /etc/ssl/cert.pem

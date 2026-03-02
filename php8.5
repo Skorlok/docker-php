@@ -5,7 +5,7 @@ RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev curl-dev opens
 
 WORKDIR /app/php
 
-RUN wget -qO- https://www.php.net/distributions/php-8.5.2.tar.gz | tar xz --strip-components=1 &&\
+RUN wget -qO- https://www.php.net/distributions/php-8.5.3.tar.gz | tar xz --strip-components=1 &&\
     ./configure\
         --disable-ctype\
         --disable-fileinfo\
@@ -34,14 +34,14 @@ RUN wget -qO- https://codeload.github.com/php/pecl-networking-xmlrpc/tar.gz/refs
     make -j$(nproc) &&\
     make install
 
-RUN strip /usr/local/bin/php
+RUN strip /usr/local/bin/php && echo "extension=xmlrpc.so" > /usr/local/lib/php.ini
 
 RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi && mkdir /app/libs/ && cp /lib/ld-musl-$FLAG.so.1 /app/libs/ && strip /app/libs/ld-musl-$FLAG.so.1
 
 RUN strip /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16 /usr/lib/libsqlite3.so.0 /usr/lib/libonig.so.5 /usr/lib/libssl.so.3 /usr/lib/libcrypto.so.3 /usr/lib/libcurl.so.4 /usr/lib/libcares.so.2\
           /usr/lib/libnghttp2.so.14 /usr/lib/libidn2.so.0 /usr/lib/libpsl.so.5 /usr/lib/libzstd.so.1 /usr/lib/libbrotlidec.so.1 /usr/lib/libunistring.so.5 /usr/lib/libbrotlicommon.so.1 /usr/lib/libnghttp3.so.9 /usr/lib/libgcc_s.so.1
 
-FROM busybox:musl
+FROM scratch
 
 COPY --from=base /app/libs/ /lib/
 COPY --from=base /usr/lib/libz.so.1 /usr/lib/libz.so.1
@@ -68,6 +68,6 @@ COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
 COPY --from=base /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
-RUN echo "extension=xmlrpc.so" > /usr/local/lib/php.ini
+COPY --from=base /usr/local/lib/php.ini /usr/local/lib/php.ini
 
-ADD https://curl.se/ca/cacert.pem /etc/ssl/certs/ca-certificates.crt
+ADD https://curl.se/ca/cacert.pem /etc/ssl/cert.pem
