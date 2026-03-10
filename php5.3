@@ -10,16 +10,22 @@ WORKDIR /app/php
 RUN wget -qO- http://museum.php.net/php5/php-5.3.29.tar.gz | tar xz --strip-components=1 &&\
     if [ "$TARGETARCH" = "arm64" ]; then CONFIG_FLAGS="--host=aarch64-unknown-linux-gnu --build=aarch64-unknown-linux-gnu"; else CONFIG_FLAGS=""; fi &&\
     ./configure $CONFIG_FLAGS --with-config-file-path=/opt/php/\
+		--disable-cgi\
+		--without-pear\
+		--disable-phpdbg\
         --disable-ctype\
         --disable-fileinfo\
         --disable-opcache\
-        --disable-pdo\
+        --without-iconv\
+		--disable-huge-code-pages\
+		--disable-opcache-jit\
+		--disable-pdo\
+		--without-pdo-sqlite\
         --disable-posix\
         --disable-session\
         --disable-tokenizer\
         --disable-xmlreader\
         --disable-xmlwriter\
-        --without-iconv\
         --enable-json\
         --enable-xml\
         --enable-libxml\
@@ -42,7 +48,7 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi 
 
 RUN strip /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16
 
-FROM scratch
+FROM busybox:musl
 
 COPY --from=base /app/libs/ /lib/
 COPY --from=base /usr/lib/libz.so.1 /usr/lib/libz.so.1

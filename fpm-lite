@@ -1,0 +1,85 @@
+FROM alpine:latest AS base
+ARG TARGETARCH
+
+RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev curl-dev openssl-dev sqlite-dev oniguruma-dev linux-headers libzip-dev
+
+WORKDIR /app/php
+
+RUN wget -qO- https://www.php.net/distributions/php-8.5.3.tar.gz | tar xz --strip-components=1 &&\
+	./configure\
+		--enable-fpm\
+		--disable-cli\
+		--disable-cgi\
+		--without-pear\
+		--disable-phpdbg\
+		--disable-ctype\
+		--disable-dom\
+		--disable-fileinfo\
+		--without-iconv\
+		--disable-huge-code-pages\
+		--disable-opcache-jit\
+		--disable-pdo\
+		--without-pdo-sqlite\
+		--disable-phar\
+		--disable-posix\
+		--disable-tokenizer\
+		--disable-xmlreader\
+		--disable-xmlwriter\
+		--enable-mbstring\
+		--enable-pcntl\
+		--enable-sockets\
+		--enable-gd\
+		--with-mysqli=mysqlnd\
+		--with-openssl\
+		--with-zlib\
+		--with-curl\
+		--with-zip\
+		--enable-xml\
+		--enable-simplexml\
+		--enable-session&&\
+    make -j$(nproc) &&\
+    make install
+	
+RUN strip /usr/local/sbin/php-fpm &&\
+	mv /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.conf && mv /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf &&\
+	sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /usr/local/etc/php-fpm.d/www.conf &&\
+	sed -i 's@include=NONE/etc/php-fpm.d/\*.conf@include=/usr/local/etc/php-fpm.d/\*.conf@g' /usr/local/etc/php-fpm.conf &&\
+	sed -i 's@;error_log = log/php-fpm.log@error_log = /dev/null@g' /usr/local/etc/php-fpm.conf
+
+RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi && mkdir /app/libs/ && cp /lib/ld-musl-$FLAG.so.1 /app/libs/ && strip /app/libs/ld-musl-$FLAG.so.1
+
+RUN strip /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16 /usr/lib/libsqlite3.so.0 /usr/lib/libonig.so.5 /usr/lib/libssl.so.3 /usr/lib/libcrypto.so.3 /usr/lib/libcurl.so.4\
+		  /usr/lib/libcares.so.2 /usr/lib/libnghttp2.so.14 /usr/lib/libidn2.so.0 /usr/lib/libpsl.so.5 /usr/lib/libzstd.so.1 /usr/lib/libbrotlidec.so.1 /usr/lib/libunistring.so.5 /usr/lib/libbrotlicommon.so.1\
+		  /usr/lib/libnghttp3.so.9 /usr/lib/libgcc_s.so.1 /usr/lib/libzip.so.5 /usr/lib/libbz2.so.1
+
+FROM busybox:musl
+
+COPY --from=base /app/libs/ /lib/
+COPY --from=base /usr/lib/libxml2.so.2 /usr/lib/libxml2.so.2
+COPY --from=base /usr/lib/libssl.so.3 /usr/lib/libssl.so.3
+COPY --from=base /usr/lib/libcrypto.so.3 /usr/lib/libcrypto.so.3
+COPY --from=base /usr/lib/libsqlite3.so.0 /usr/lib/libsqlite3.so.0
+COPY --from=base /usr/lib/libz.so.1 /usr/lib/libz.so.1
+COPY --from=base /usr/lib/libcurl.so.4 /usr/lib/libcurl.so.4
+COPY --from=base /usr/lib/libpng16.so.16 /usr/lib/libpng16.so.16
+COPY --from=base /usr/lib/libonig.so.5 /usr/lib/libonig.so.5
+COPY --from=base /usr/lib/libgcc_s.so.1 /usr/lib/libgcc_s.so.1
+COPY --from=base /usr/lib/liblzma.so.5 /usr/lib/liblzma.so.5
+COPY --from=base /usr/lib/libcares.so.2 /usr/lib/libcares.so.2
+COPY --from=base /usr/lib/libnghttp3.so.9 /usr/lib/libnghttp3.so.9
+COPY --from=base /usr/lib/libnghttp2.so.14 /usr/lib/libnghttp2.so.14
+COPY --from=base /usr/lib/libidn2.so.0 /usr/lib/libidn2.so.0
+COPY --from=base /usr/lib/libpsl.so.5 /usr/lib/libpsl.so.5
+COPY --from=base /usr/lib/libzstd.so.1 /usr/lib/libzstd.so.1
+COPY --from=base /usr/lib/libbrotlidec.so.1 /usr/lib/libbrotlidec.so.1
+COPY --from=base /usr/lib/libunistring.so.5 /usr/lib/libunistring.so.5
+COPY --from=base /usr/lib/libbrotlicommon.so.1 /usr/lib/libbrotlicommon.so.1
+COPY --from=base /usr/lib/libzip.so.5 /usr/lib/libzip.so.5
+COPY --from=base /usr/lib/libbz2.so.1 /usr/lib/libbz2.so.1
+
+COPY --from=base /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
+COPY --from=base /usr/local/etc/ /usr/local/etc/
+
+ADD https://curl.se/ca/cacert.pem /etc/ssl/cert.pem
+
+CMD ["php-fpm","-F","-O"]

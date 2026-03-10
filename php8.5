@@ -7,15 +7,22 @@ WORKDIR /app/php
 
 RUN wget -qO- https://www.php.net/distributions/php-8.5.3.tar.gz | tar xz --strip-components=1 &&\
     ./configure\
+		--disable-cgi\
+		--without-pear\
+		--disable-phpdbg\
         --disable-ctype\
         --disable-fileinfo\
         --disable-opcache\
+		--without-iconv\
+		--disable-huge-code-pages\
+		--disable-opcache-jit\
+		--disable-pdo\
+		--without-pdo-sqlite\
         --disable-posix\
         --disable-session\
         --disable-tokenizer\
         --disable-xmlreader\
         --disable-xmlwriter\
-        --without-iconv\
         --enable-xml\
         --enable-mbstring\
         --enable-pcntl\

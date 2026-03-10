@@ -9,16 +9,22 @@ WORKDIR /app/php
 
 RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfig && wget -qO- https://www.php.net/distributions/php-7.4.33.tar.gz | tar xz --strip-components=1 &&\
     ./configure --with-config-file-path=/opt/php/\
+		--disable-cgi\
+		--without-pear\
+		--disable-phpdbg\
         --disable-ctype\
         --disable-fileinfo\
         --disable-opcache\
-        --disable-pdo\
+        --without-iconv\
+		--disable-huge-code-pages\
+		--disable-opcache-jit\
+		--disable-pdo\
+		--without-pdo-sqlite\
         --disable-posix\
         --disable-session\
         --disable-tokenizer\
         --disable-xmlreader\
         --disable-xmlwriter\
-        --without-iconv\
         --enable-json\
         --enable-xml\
         --enable-libxml\
