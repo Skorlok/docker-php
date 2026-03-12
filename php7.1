@@ -8,56 +8,52 @@ RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev oniguruma-dev 
 WORKDIR /app/php
 
 RUN wget -qO- https://www.php.net/distributions/php-7.1.33.tar.gz | tar xz --strip-components=1 &&\
-    ./configure --with-config-file-path=/opt/php/\
+	./configure --with-config-file-path=/opt/php/\
 		--disable-cgi\
 		--without-pear\
 		--disable-phpdbg\
-        --disable-ctype\
-        --disable-fileinfo\
-        --disable-opcache\
-        --without-iconv\
+		--disable-ctype\
+		--disable-fileinfo\
+		--disable-opcache\
+		--without-iconv\
 		--disable-huge-code-pages\
 		--disable-opcache-jit\
 		--disable-pdo\
 		--without-pdo-sqlite\
-        --disable-posix\
-        --disable-session\
-        --disable-tokenizer\
-        --disable-xmlreader\
-        --disable-xmlwriter\
-        --enable-json\
-        --enable-xml\
-        --enable-libxml\
-        --enable-mbstring\
-        --enable-pcntl\
-        --enable-sockets\
-        --with-gd\
-        --enable-mysqlnd --with-mysqli=mysqlnd\
-        --with-openssl=/opt/openssl1.1\
-        --with-zlib\
-        --with-xmlrpc\
-        --with-curl=/opt/curl8\
-        --with-openssl-dir=/opt/openssl1.1&&\
-    make -j$(nproc) &&\
-    make install
+		--disable-posix\
+		--disable-session\
+		--disable-tokenizer\
+		--disable-xmlreader\
+		--disable-xmlwriter\
+		--enable-json\
+		--enable-xml\
+		--enable-libxml\
+		--enable-mbstring\
+		--enable-pcntl\
+		--enable-sockets\
+		--with-gd\
+		--enable-mysqlnd --with-mysqli=mysqlnd\
+		--with-openssl=/opt/openssl1.1\
+		--with-zlib\
+		--with-xmlrpc\
+		--with-curl=/opt/curl8\
+		--with-openssl-dir=/opt/openssl1.1&&\
+	make -j$(nproc) && make install
 
 
 RUN strip /usr/local/bin/php
 
 RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi && mkdir /app/libs/ && cp /lib/ld-musl-$FLAG.so.1 /app/libs/ && strip /app/libs/ld-musl-$FLAG.so.1
 
-RUN strip /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16
+RUN cp /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16\
+	/app/libs/
 
 FROM busybox:musl
 
 COPY --from=base /app/libs/ /lib/
-COPY --from=base /usr/lib/libz.so.1 /usr/lib/libz.so.1
 COPY --from=lib /opt/openssl1.1/lib/libcrypto.so.1.1 /opt/openssl1.1/lib/libcrypto.so.1.1
 COPY --from=lib /opt/openssl1.1/lib/libssl.so.1.1 /opt/openssl1.1/lib/libssl.so.1.1
 COPY --from=lib /opt/curl8/lib/libcurl.so.4 /opt/curl8/lib/libcurl.so.4
-COPY --from=base /usr/lib/libxml2.so.2 /usr/lib/libxml2.so.2
-COPY --from=base /usr/lib/liblzma.so.5 /usr/lib/liblzma.so.5
-COPY --from=base /usr/lib/libpng16.so.16 /usr/lib/libpng16.so.16
 
 COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
