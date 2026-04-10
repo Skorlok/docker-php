@@ -79,7 +79,7 @@ jobs:
           tags: skorlok/php:${{ steps.tag.outputs.TAG }}-arm64
 
   manifest:
-    needs: [build-amd64, build-arm64]
+    needs: [detect, build-amd64, build-arm64]
     runs-on: ubuntu-latest
     strategy:
       matrix:
