@@ -1,38 +1,42 @@
+FROM skorlok/php:base AS lib
 FROM alpine:latest AS base
+COPY --from=lib /opt/ /opt/
 ARG TARGETARCH
 
-RUN apk add --no-cache build-base autoconf libxml2-dev sqlite-dev oniguruma-dev libzip-dev linux-headers
+RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev openssl-dev sqlite-dev oniguruma-dev libzip-dev linux-headers icu-dev icu-data-full
 
 WORKDIR /app/php
 
-RUN wget -qO- https://www.php.net/distributions/php-8.5.4.tar.gz | tar xz --strip-components=1 &&\
+RUN export PKG_CONFIG_PATH=/opt/curlssl3/lib/pkgconfig && wget -qO- https://www.php.net/distributions/php-8.5.4.tar.gz | tar xz --strip-components=1 &&\
 	./configure\
 		--enable-fpm\
-		--disable-cli\
 		--disable-cgi\
 		--without-pear\
 		--disable-phpdbg\
-		--disable-ctype\
-		--disable-fileinfo\
-		--without-iconv\
 		--disable-huge-code-pages\
 		--disable-opcache-jit\
-		--disable-pdo\
 		--without-pdo-sqlite\
-		--disable-phar\
 		--disable-posix\
 		--without-sqlite3\
-		--disable-tokenizer\
 		--disable-xmlreader\
-		--disable-xmlwriter\
 		--enable-session\
+		--enable-tokenizer\
 		--enable-xml\
 		--enable-mbstring\
+		--enable-sockets\
+		--enable-gd\
+		--enable-intl\
+		--enable-exif\
 		--with-mysqli=mysqlnd\
-		--with-zip&&\
+		--with-pdo-mysql\
+		--with-zip\
+		--with-openssl\
+		--with-zlib\
+		--with-iconv\
+		--with-curl=/opt/curlssl3&&\
 	make -j$(nproc) && make install
 
-RUN strip /usr/local/sbin/php-fpm &&\
+RUN strip /usr/local/sbin/php-fpm /usr/local/bin/php &&\
 	mv /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.conf && mv /usr/local/etc/php-fpm.d/www.conf.default /usr/local/etc/php-fpm.d/www.conf &&\
 	sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /usr/local/etc/php-fpm.d/www.conf &&\
 	sed -i 's@include=NONE/etc/php-fpm.d/\*.conf@include=/usr/local/etc/php-fpm.d/\*.conf@g' /usr/local/etc/php-fpm.conf &&\
@@ -44,16 +48,20 @@ RUN strip /usr/local/sbin/php-fpm &&\
 RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi && mkdir /app/libs/ && cp /lib/ld-musl-$FLAG.so.1 /app/libs/ && strip /app/libs/ld-musl-$FLAG.so.1
 
 RUN cp /usr/lib/libxml2.so.2 /usr/lib/libz.so.1 /usr/lib/libonig.so.5 /usr/lib/libcrypto.so.3 /usr/lib/liblzma.so.5 /usr/lib/libzstd.so.1 /usr/lib/libzip.so.5 /usr/lib/libbz2.so.1\
+	/usr/lib/libstdc++.so.6 /usr/lib/libssl.so.3 /usr/lib/libpng16.so.16 /usr/lib/libicuio.so.76 /usr/lib/libicui18n.so.76 /usr/lib/libicuuc.so.76 /usr/lib/libgcc_s.so.1 /usr/lib/libicudata.so.76\
 	/app/libs/
 
 FROM busybox:musl
 
 COPY --from=base /app/libs/ /lib/
+COPY --from=lib /opt/curlssl3/lib/libcurl.so.4 /opt/curlssl3/lib/libcurl.so.4
 
+COPY --from=base /usr/local/bin/php /usr/local/bin/php
 COPY --from=base /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
 COPY --from=base /usr/local/etc/ /usr/local/etc/
 
 RUN adduser -Du 1000 phpfpm
+RUN mkdir /.composer/ && chown -R 1000:1000 /.composer/
 USER phpfpm
 
 CMD ["php-fpm","-F","-O"]

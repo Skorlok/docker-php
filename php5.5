@@ -3,7 +3,7 @@ FROM alpine:latest AS base
 COPY --from=lib /opt/ /opt/
 ARG TARGETARCH
 
-RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.10/main/ gcc=8.3.0-r0
+RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev libzip-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.10/main/ gcc=8.3.0-r0
 
 WORKDIR /app/php
 
@@ -35,6 +35,7 @@ RUN wget -qO- http://museum.php.net/php5/php-5.5.0.tar.gz | tar xz --strip-compo
 		--enable-mysqlnd --with-mysqli=mysqlnd\
 		--with-openssl=/opt/openssl1.0\
 		--with-zlib\
+		--with-zip\
 		--with-xmlrpc\
 		--with-curl=/opt/curl7\
 		--with-openssl-dir=/opt/openssl1.0&&\
@@ -45,7 +46,7 @@ RUN strip /usr/local/bin/php
 
 RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi && mkdir /app/libs/ && cp /lib/ld-musl-$FLAG.so.1 /app/libs/ && strip /app/libs/ld-musl-$FLAG.so.1
 
-RUN cp /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16\
+RUN cp /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16 /usr/lib/libzstd.so.1 /usr/lib/libzip.so.5 /usr/lib/libbz2.so.1 /usr/lib/libcrypto.so.3\
 	/app/libs/
 
 FROM busybox:musl

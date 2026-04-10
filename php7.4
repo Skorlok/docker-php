@@ -3,7 +3,7 @@ FROM alpine:latest AS base
 COPY --from=lib /opt/ /opt/
 ARG TARGETARCH
 
-RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev sqlite-dev oniguruma-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main/ gcc=13.2.1_git20240309-r1
+RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev sqlite-dev oniguruma-dev libzip-dev && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main/ gcc=13.2.1_git20240309-r1
 
 WORKDIR /app/php
 
@@ -35,6 +35,7 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
 		--enable-mysqlnd --with-mysqli=mysqlnd\
 		--with-openssl\
 		--with-zlib\
+		--with-zip\
 		--with-xmlrpc\
 		--with-curl=/opt/curl8\
 		--with-openssl-dir=/opt/openssl1.1&&\
@@ -45,7 +46,8 @@ RUN strip /usr/local/bin/php
 
 RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi && mkdir /app/libs/ && cp /lib/ld-musl-$FLAG.so.1 /app/libs/ && strip /app/libs/ld-musl-$FLAG.so.1
 
-RUN cp /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16 /usr/lib/libsqlite3.so.0 /usr/lib/libonig.so.5\
+RUN cp /usr/lib/libz.so.1 /usr/lib/libxml2.so.2 /usr/lib/liblzma.so.5 /usr/lib/libpng16.so.16 /usr/lib/libsqlite3.so.0 /usr/lib/libonig.so.5 /usr/lib/libcrypto.so.3\
+	/usr/lib/libzstd.so.1 /usr/lib/libzip.so.5 /usr/lib/libbz2.so.1\
 	/app/libs/
 
 FROM scratch
