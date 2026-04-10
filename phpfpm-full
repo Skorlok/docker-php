@@ -60,6 +60,8 @@ COPY --from=base /usr/local/bin/php /usr/local/bin/php
 COPY --from=base /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
 COPY --from=base /usr/local/etc/ /usr/local/etc/
 
+ADD https://curl.se/ca/cacert.pem /etc/ssl/cert.pem
+
 RUN adduser -Du 1000 phpfpm
 RUN mkdir /.composer/ && chown -R 1000:1000 /.composer/
 USER phpfpm
