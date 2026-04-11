@@ -12,13 +12,9 @@ RUN wget -qO- http://museum.php.net/php5/php-5.3.29.tar.gz | tar xz --strip-comp
 	./configure $CONFIG_FLAGS --with-config-file-path=/opt/php/\
 		--disable-cgi\
 		--without-pear\
-		--disable-phpdbg\
 		--disable-ctype\
 		--disable-fileinfo\
-		--disable-opcache\
 		--without-iconv\
-		--disable-huge-code-pages\
-		--disable-opcache-jit\
 		--disable-pdo\
 		--without-pdo-sqlite\
 		--disable-posix\
@@ -41,6 +37,7 @@ RUN wget -qO- http://museum.php.net/php5/php-5.3.29.tar.gz | tar xz --strip-comp
 		--with-curl=/opt/curl7\
 		--with-openssl-dir=/opt/openssl1.0&&\
 	make -j$(nproc) && make install
+
 
 RUN strip /usr/local/bin/php
 

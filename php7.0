@@ -17,7 +17,6 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
 		--disable-opcache\
 		--without-iconv\
 		--disable-huge-code-pages\
-		--disable-opcache-jit\
 		--disable-pdo\
 		--without-pdo-sqlite\
 		--disable-posix\
