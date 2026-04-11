@@ -26,7 +26,6 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
 		--disable-xmlwriter\
 		--enable-json\
 		--enable-xml\
-		--enable-libxml\
 		--enable-mbstring\
 		--enable-pcntl\
 		--enable-sockets\
