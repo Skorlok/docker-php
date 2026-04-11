@@ -7,7 +7,7 @@ RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev oniguruma-dev 
 
 WORKDIR /app/php
 
-RUN wget -qO- https://www.php.net/distributions/php-7.1.33.tar.gz | tar xz --strip-components=1 &&\
+RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfig && wget -qO- https://www.php.net/distributions/php-7.1.33.tar.gz | tar xz --strip-components=1 &&\
 	./configure --with-config-file-path=/opt/php/\
 		--disable-cgi\
 		--without-pear\
@@ -33,11 +33,11 @@ RUN wget -qO- https://www.php.net/distributions/php-7.1.33.tar.gz | tar xz --str
 		--enable-sockets\
 		--with-gd\
 		--enable-mysqlnd --with-mysqli=mysqlnd\
-		--with-openssl=/opt/openssl1.1\
+		--with-openssl\
 		--with-zlib\
 		--with-zip\
 		--with-xmlrpc\
-		--with-curl=/opt/curl8\
+		--with-curl\
 		--with-openssl-dir=/opt/openssl1.1&&\
 	make -j$(nproc) && make install
 

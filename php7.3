@@ -37,7 +37,7 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
 		--with-zlib\
 		--with-zip\
 		--with-xmlrpc\
-		--with-curl=/opt/curl8\
+		--with-curl\
 		--with-openssl-dir=/opt/openssl1.1&&\
 	make -j$(nproc) && make install
 

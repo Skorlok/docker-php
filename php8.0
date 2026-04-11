@@ -34,7 +34,7 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
 		--with-openssl\
 		--with-zlib\
 		--with-zip\
-		--with-curl=/opt/curl8&&\
+		--with-curl&&\
 	make -j$(nproc) && make install
 
 RUN wget -qO- https://codeload.github.com/php/pecl-networking-xmlrpc/tar.gz/refs/heads/master | tar -xz --strip-components=1 &&\

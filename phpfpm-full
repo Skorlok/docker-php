@@ -33,7 +33,7 @@ RUN export PKG_CONFIG_PATH=/opt/curlssl3/lib/pkgconfig && wget -qO- https://www.
 		--with-openssl\
 		--with-zlib\
 		--with-iconv\
-		--with-curl=/opt/curlssl3&&\
+		--with-curl&&\
 	make -j$(nproc) && make install
 
 RUN strip /usr/local/sbin/php-fpm /usr/local/bin/php &&\
