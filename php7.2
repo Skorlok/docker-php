@@ -1,4 +1,4 @@
-FROM skorlok/php:base AS lib
+FROM ghcr.io/skorlok/docker-php:base AS lib
 FROM alpine:latest AS base
 COPY --from=lib /opt/ /opt/
 ARG TARGETARCH
