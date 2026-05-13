@@ -5,7 +5,7 @@ on:
     workflows: ["Build & Push PHP Docker Images"]
     types:
       - completed
-	  
+
 permissions:
   contents: write
   packages: write
