@@ -6,6 +6,7 @@ on:
     paths:
       - 'php*'
       - 'combinedPHP'
+  workflow_dispatch:
 
 permissions:
   contents: write
