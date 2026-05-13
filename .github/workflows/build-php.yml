@@ -141,7 +141,7 @@ jobs:
       - name: Extract AMD64
         run: |
           docker pull --platform linux/amd64 skorlok/php:combined
-          id=$(docker create --platform linux/amd64 skorlok/php:combined)
+          id=$(docker create --platform linux/amd64 skorlok/php:combined /bin/sh)
           mkdir -p ./rootfs/usr/local/bin ./rootfs/usr/local/lib/php ./rootfs/opt
           docker cp $id:/usr/local/bin/ ./rootfs/usr/local/bin/
           docker cp $id:/usr/local/lib/php/extensions/ ./rootfs/usr/local/lib/php/extensions/
@@ -165,7 +165,7 @@ jobs:
       - name: Extract ARM64
         run: |
           docker pull --platform linux/arm64 skorlok/php:combined
-          id=$(docker create --platform linux/arm64 skorlok/php:combined)
+          id=$(docker create --platform linux/arm64 skorlok/php:combined /bin/sh)
           mkdir -p ./rootfs/usr/local/bin ./rootfs/usr/local/lib/php ./rootfs/opt
           docker cp $id:/usr/local/bin/ ./rootfs/usr/local/bin/
           docker cp $id:/usr/local/lib/php/extensions/ ./rootfs/usr/local/lib/php/extensions/
