@@ -189,11 +189,14 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: php-combined-arm64
+      - name: Set date
+        id: date
+        run: echo "DATE=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.run_id }}
-          name: PHP Combined ${{ github.run_id }}
+          tag_name: ${{ steps.date.outputs.DATE }}
+          name: PHP Combined ${{ steps.date.outputs.DATE }}
           files: |
             php-combined-amd64.tar.gz
             php-combined-arm64.tar.gz
