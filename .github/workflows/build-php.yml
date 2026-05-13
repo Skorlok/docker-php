@@ -148,7 +148,7 @@ jobs:
           docker cp $id:/usr/local/lib/php/extensions/. ./rootfs/usr/local/lib/php/extensions/
           docker cp $id:/opt/. ./rootfs/opt/
           docker rm $id
-          find ./rootfs/usr/local/bin/ -maxdepth 1 ! -name 'php*.*' -delete
+          find ./rootfs/usr/local/bin/ -maxdepth 1 -type f ! -name 'php*.*' -delete
           tar -czf php-combined-amd64.tar.gz -C ./rootfs .
       - uses: actions/upload-artifact@v4
         with:
@@ -172,7 +172,7 @@ jobs:
           docker cp $id:/usr/local/lib/php/extensions/. ./rootfs/usr/local/lib/php/extensions/
           docker cp $id:/opt/. ./rootfs/opt/
           docker rm $id
-          find ./rootfs/usr/local/bin/ -maxdepth 1 ! -name 'php*.*' -delete
+          find ./rootfs/usr/local/bin/ -maxdepth 1 -type f ! -name 'php*.*' -delete
           tar -czf php-combined-arm64.tar.gz -C ./rootfs .
       - uses: actions/upload-artifact@v4
         with:
