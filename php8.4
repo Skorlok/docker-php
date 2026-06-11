@@ -7,7 +7,7 @@ RUN apk add --no-cache build-base autoconf libxml2-dev libpng-dev openssl-dev sq
 
 WORKDIR /app/php
 
-RUN export PKG_CONFIG_PATH=/opt/curlssl3/lib/pkgconfig && wget -qO- https://www.php.net/distributions/php-8.4.21.tar.gz | tar xz --strip-components=1 &&\
+RUN export PKG_CONFIG_PATH=/opt/curlssl3/lib/pkgconfig && wget -qO- https://www.php.net/distributions/php-8.4.22.tar.gz | tar xz --strip-components=1 &&\
 	./configure\
 		--disable-cgi\
 		--without-pear\
