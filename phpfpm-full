@@ -48,7 +48,7 @@ RUN strip /usr/local/sbin/php-fpm /usr/local/bin/php &&\
 RUN if [ "$TARGETARCH" = "arm64" ]; then FLAG="aarch64"; else FLAG="x86_64"; fi && mkdir /app/libs/ && cp /lib/ld-musl-$FLAG.so.1 /app/libs/ && strip /app/libs/ld-musl-$FLAG.so.1
 
 RUN cp /usr/lib/libxml2.so.2 /usr/lib/libz.so.1 /usr/lib/libonig.so.5 /usr/lib/libcrypto.so.3 /usr/lib/liblzma.so.5 /usr/lib/libzstd.so.1 /usr/lib/libzip.so.5 /usr/lib/libbz2.so.1\
-	/usr/lib/libstdc++.so.6 /usr/lib/libssl.so.3 /usr/lib/libpng16.so.16 /usr/lib/libicuio.so.76 /usr/lib/libicui18n.so.76 /usr/lib/libicuuc.so.76 /usr/lib/libgcc_s.so.1 /usr/lib/libicudata.so.76\
+	/usr/lib/libstdc++.so.6 /usr/lib/libssl.so.3 /usr/lib/libpng16.so.16 /usr/lib/libicuio.so.78 /usr/lib/libicui18n.so.78 /usr/lib/libicuuc.so.78 /usr/lib/libgcc_s.so.1 /usr/lib/libicudata.so.78\
 	/app/libs/
 
 FROM busybox:musl
