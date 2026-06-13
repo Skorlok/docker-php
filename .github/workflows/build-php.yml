@@ -33,8 +33,8 @@ jobs:
         dockerfile: ${{ fromJSON(needs.detect.outputs.dockerfiles_json) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -46,12 +46,13 @@ jobs:
           TAG=${TAG#php}
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
       - name: Build & Push AMD64
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./${{ matrix.dockerfile }}
           platforms: linux/amd64
           push: true
+          provenance: false
           tags: ghcr.io/skorlok/docker-php:${{ steps.tag.outputs.TAG }}-amd64
 
   build-arm64:
@@ -62,8 +63,8 @@ jobs:
         dockerfile: ${{ fromJSON(needs.detect.outputs.dockerfiles_json) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -75,12 +76,13 @@ jobs:
           TAG=${TAG#php}
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
       - name: Build & Push ARM64
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./${{ matrix.dockerfile }}
           platforms: linux/arm64
           push: true
+          provenance: false
           tags: ghcr.io/skorlok/docker-php:${{ steps.tag.outputs.TAG }}-arm64
 
   manifest:
@@ -117,8 +119,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -135,7 +137,7 @@ jobs:
     needs: build-combined
     runs-on: ubuntu-latest
     steps:
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -159,7 +161,7 @@ jobs:
     needs: build-combined
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
