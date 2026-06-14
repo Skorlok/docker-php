@@ -95,10 +95,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Set Docker tag
         id: tag
         run: |
@@ -108,7 +104,7 @@ jobs:
       - name: Create and push manifest
         run: |
           docker buildx imagetools create \
-            -t skorlok/php:${{ steps.tag.outputs.TAG }} \
+            -t ghcr.io/skorlok/php:${{ steps.tag.outputs.TAG }} \
             ghcr.io/skorlok/docker-php:${{ steps.tag.outputs.TAG }}-amd64 \
             ghcr.io/skorlok/docker-php:${{ steps.tag.outputs.TAG }}-arm64
 
@@ -120,8 +116,9 @@ jobs:
       - uses: docker/setup-buildx-action@v4
       - uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build & Push combined
         uses: docker/build-push-action@v5
         with:
@@ -129,7 +126,7 @@ jobs:
           file: ./combinedPHP
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: skorlok/php:combined
+          tags: ghcr.io/skorlok/php:combined
 
   extract-amd64:
     needs: build-combined
@@ -137,12 +134,13 @@ jobs:
     steps:
       - uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract AMD64
         run: |
-          docker pull --platform linux/amd64 skorlok/php:combined
-          id=$(docker create --platform linux/amd64 skorlok/php:combined /bin/sh)
+          docker pull --platform linux/amd64 ghcr.io/skorlok/php:combined
+          id=$(docker create --platform linux/amd64 ghcr.io/skorlok/php:combined /bin/sh)
           mkdir -p ./rootfs/usr/local/bin ./rootfs/usr/local/lib/php ./rootfs/opt
           docker cp $id:/usr/local/bin/. ./rootfs/usr/local/bin/
           docker cp $id:/usr/local/lib/php/extensions/. ./rootfs/usr/local/lib/php/extensions/
@@ -161,12 +159,13 @@ jobs:
     steps:
       - uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract ARM64
         run: |
-          docker pull --platform linux/arm64 skorlok/php:combined
-          id=$(docker create --platform linux/arm64 skorlok/php:combined /bin/sh)
+          docker pull --platform linux/arm64 ghcr.io/skorlok/php:combined
+          id=$(docker create --platform linux/arm64 ghcr.io/skorlok/php:combined /bin/sh)
           mkdir -p ./rootfs/usr/local/bin ./rootfs/usr/local/lib/php ./rootfs/opt
           docker cp $id:/usr/local/bin/. ./rootfs/usr/local/bin/
           docker cp $id:/usr/local/lib/php/extensions/. ./rootfs/usr/local/lib/php/extensions/
