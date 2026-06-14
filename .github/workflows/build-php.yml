@@ -52,7 +52,6 @@ jobs:
           file: ./${{ matrix.dockerfile }}
           platforms: linux/amd64
           push: true
-          provenance: false
           tags: ghcr.io/skorlok/docker-php:${{ steps.tag.outputs.TAG }}-amd64
 
   build-arm64:
@@ -82,7 +81,6 @@ jobs:
           file: ./${{ matrix.dockerfile }}
           platforms: linux/arm64
           push: true
-          provenance: false
           tags: ghcr.io/skorlok/docker-php:${{ steps.tag.outputs.TAG }}-arm64
 
   manifest:
