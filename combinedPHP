@@ -13,7 +13,7 @@ FROM ghcr.io/skorlok/php:8.4 AS php8.4
 
 
 FROM busybox:musl AS base
-FROM skorlok/php:8.4
+FROM ghcr.io/skorlok/php:8.4
 COPY --from=base / /
 
 
