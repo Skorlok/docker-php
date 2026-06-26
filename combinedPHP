@@ -1,15 +1,15 @@
-FROM skorlok/php:5.5 AS php5.5
-FROM skorlok/php:5.6 AS php5.6
-FROM skorlok/php:7.0 AS php7.0
-FROM skorlok/php:7.1 AS php7.1
-FROM skorlok/php:7.2 AS php7.2
-FROM skorlok/php:7.3 AS php7.3
-FROM skorlok/php:7.4 AS php7.4
-FROM skorlok/php:8.0 AS php8.0
-FROM skorlok/php:8.1 AS php8.1
-FROM skorlok/php:8.2 AS php8.2
-FROM skorlok/php:8.3 AS php8.3
-FROM skorlok/php:8.4 AS php8.4
+FROM ghcr.io/skorlok/php:5.5 AS php5.5
+FROM ghcr.io/skorlok/php:5.6 AS php5.6
+FROM ghcr.io/skorlok/php:7.0 AS php7.0
+FROM ghcr.io/skorlok/php:7.1 AS php7.1
+FROM ghcr.io/skorlok/php:7.2 AS php7.2
+FROM ghcr.io/skorlok/php:7.3 AS php7.3
+FROM ghcr.io/skorlok/php:7.4 AS php7.4
+FROM ghcr.io/skorlok/php:8.0 AS php8.0
+FROM ghcr.io/skorlok/php:8.1 AS php8.1
+FROM ghcr.io/skorlok/php:8.2 AS php8.2
+FROM ghcr.io/skorlok/php:8.3 AS php8.3
+FROM ghcr.io/skorlok/php:8.4 AS php8.4
 
 
 FROM busybox:musl AS base
