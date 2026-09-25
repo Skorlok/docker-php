@@ -1,3 +1,5 @@
+FROM ghcr.io/skorlok/php:5.3 AS php5.3
+FROM ghcr.io/skorlok/php:5.4 AS php5.4
 FROM ghcr.io/skorlok/php:5.5 AS php5.5
 FROM ghcr.io/skorlok/php:5.6 AS php5.6
 FROM ghcr.io/skorlok/php:7.0 AS php7.0
@@ -10,10 +12,11 @@ FROM ghcr.io/skorlok/php:8.1 AS php8.1
 FROM ghcr.io/skorlok/php:8.2 AS php8.2
 FROM ghcr.io/skorlok/php:8.3 AS php8.3
 FROM ghcr.io/skorlok/php:8.4 AS php8.4
+FROM ghcr.io/skorlok/php:8.5 AS php8.5
 
 
 FROM busybox:musl AS base
-FROM ghcr.io/skorlok/php:8.4
+FROM ghcr.io/skorlok/php:8.5
 COPY --from=base / /
 
 
@@ -25,6 +28,8 @@ COPY --from=php8.0 /opt/openssl1.1/lib/libcrypto.so.1.1 /opt/openssl1.1/lib/libc
 COPY --from=php8.0 /opt/openssl1.1/lib/libssl.so.1.1 /opt/openssl1.1/lib/libssl.so.1.1
 COPY --from=php8.0 /opt/curl8/lib/libcurl.so.4 /opt/curl8/lib/libcurl.so.4
 
+COPY --from=php5.3 /usr/local/bin/php /usr/local/bin/php5.3
+COPY --from=php5.4 /usr/local/bin/php /usr/local/bin/php5.4
 COPY --from=php5.5 /usr/local/bin/php /usr/local/bin/php5.5
 COPY --from=php5.6 /usr/local/bin/php /usr/local/bin/php5.6
 COPY --from=php7.0 /usr/local/bin/php /usr/local/bin/php7.0
@@ -45,4 +50,7 @@ COPY --from=php8.2 /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 COPY --from=php8.3 /usr/local/bin/php /usr/local/bin/php8.3
 COPY --from=php8.3 /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
-RUN cp /usr/local/bin/php /usr/local/bin/php8.4
+COPY --from=php8.4 /usr/local/bin/php /usr/local/bin/php8.4
+COPY --from=php8.4 /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+
+RUN cp /usr/local/bin/php /usr/local/bin/php8.5
