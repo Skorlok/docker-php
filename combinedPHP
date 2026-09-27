@@ -13,10 +13,11 @@ FROM ghcr.io/skorlok/php:8.2 AS php8.2
 FROM ghcr.io/skorlok/php:8.3 AS php8.3
 FROM ghcr.io/skorlok/php:8.4 AS php8.4
 FROM ghcr.io/skorlok/php:8.5 AS php8.5
+FROM ghcr.io/skorlok/php:8.6 AS php8.6
 
 
 FROM busybox:musl AS base
-FROM ghcr.io/skorlok/php:8.5
+FROM ghcr.io/skorlok/php:8.6
 COPY --from=base / /
 
 
@@ -53,4 +54,7 @@ COPY --from=php8.3 /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 COPY --from=php8.4 /usr/local/bin/php /usr/local/bin/php8.4
 COPY --from=php8.4 /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
-RUN cp /usr/local/bin/php /usr/local/bin/php8.5
+COPY --from=php8.5 /usr/local/bin/php /usr/local/bin/php8.5
+COPY --from=php8.5 /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+
+RUN cp /usr/local/bin/php /usr/local/bin/php8.6
