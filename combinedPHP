@@ -20,6 +20,7 @@ FROM busybox:musl AS base
 FROM ghcr.io/skorlok/php:8.6
 COPY --from=base / /
 
+COPY --from=php5.4 /opt/libxml2/lib/libxml2.so.2 /opt/libxml2/lib/libxml2.so.2
 
 COPY --from=php5.6 /opt/openssl1.0/lib/libcrypto.so.1.0.0 /opt/openssl1.0/lib/libcrypto.so.1.0.0
 COPY --from=php5.6 /opt/openssl1.0/lib/libssl.so.1.0.0 /opt/openssl1.0/lib/libssl.so.1.0.0
