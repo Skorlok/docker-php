@@ -61,4 +61,4 @@ COPY --from=base /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
 COPY --from=base /usr/local/lib/php.ini /usr/local/lib/php.ini
 
-ADD https://curl.se/ca/cacert.pem /etc/ssl/cert.pem
+ADD --chmod=a+rX https://curl.se/ca/cacert.pem /etc/ssl/cert.pem

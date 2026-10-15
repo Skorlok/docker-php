@@ -57,4 +57,4 @@ COPY --from=lib /opt/curl8/lib/libcurl.so.4 /opt/curl8/lib/libcurl.so.4
 
 COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
-ADD https://curl.se/ca/cacert.pem /etc/ssl/cert.pem
+ADD --chmod=a+rX https://curl.se/ca/cacert.pem /etc/ssl/cert.pem

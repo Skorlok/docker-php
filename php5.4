@@ -58,4 +58,4 @@ COPY --from=lib /opt/libxml2/lib/libxml2.so.2 /opt/libxml2/lib/libxml2.so.2
 
 COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
-ADD https://curl.se/ca/cacert.pem /etc/ssl/cert.pem
+ADD --chmod=a+rX https://curl.se/ca/cacert.pem /etc/ssl/cert.pem
