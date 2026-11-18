@@ -36,6 +36,7 @@ RUN wget -qO- http://museum.php.net/php5/php-5.5.0.tar.gz | tar xz --strip-compo
 		--enable-zip\
 		--with-xmlrpc\
 		--with-curl=/opt/curl7\
+		--with-pgsql=/opt/libpq\
 		--with-openssl-dir=/opt/openssl1.0&&\
 	make -j$(nproc) && make install
 
@@ -53,6 +54,7 @@ COPY --from=base /app/libs/ /lib/
 COPY --from=lib /opt/openssl1.0/lib/libcrypto.so.1.0.0 /opt/openssl1.0/lib/libcrypto.so.1.0.0
 COPY --from=lib /opt/openssl1.0/lib/libssl.so.1.0.0 /opt/openssl1.0/lib/libssl.so.1.0.0
 COPY --from=lib /opt/curl7/lib/libcurl.so.4 /opt/curl7/lib/libcurl.so.4
+COPY --from=lib /opt/libpq/lib/libpq.so.5 /opt/libpq/lib/libpq.so.5
 
 COPY --from=base /usr/local/bin/php /usr/local/bin/php
 

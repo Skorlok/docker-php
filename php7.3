@@ -36,6 +36,7 @@ RUN export PKG_CONFIG_PATH=/opt/curl8/lib/pkgconfig:/opt/openssl1.1/lib/pkgconfi
 		--enable-zip\
 		--with-xmlrpc\
 		--with-curl\
+		--with-pgsql=/opt/libpq\
 		--with-openssl-dir=/opt/openssl1.1&&\
 	make -j$(nproc) && make install
 
@@ -53,6 +54,7 @@ COPY --from=base /app/libs/ /lib/
 COPY --from=lib /opt/openssl1.1/lib/libcrypto.so.1.1 /opt/openssl1.1/lib/libcrypto.so.1.1
 COPY --from=lib /opt/openssl1.1/lib/libssl.so.1.1 /opt/openssl1.1/lib/libssl.so.1.1
 COPY --from=lib /opt/curl8/lib/libcurl.so.4 /opt/curl8/lib/libcurl.so.4
+COPY --from=lib /opt/libpq/lib/libpq.so.5 /opt/libpq/lib/libpq.so.5
 
 COPY --from=base /usr/local/bin/php /usr/local/bin/php
 
